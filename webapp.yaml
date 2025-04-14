@@ -53,7 +53,7 @@ spec:
   ports:
     - protocol: TCP
       port: 27017
-      targetPort: 300     # Always the same as container port
+      targetPort: 3000     # Always the same as container port
   # type: ClusterIP
 
 
