@@ -4,6 +4,6 @@ metadata:
   name: mongo-config
   namespace: default
 data:
-  mongo_url: mongo-service      # service that we create
+  mongo-url: mongo-service      # service that we create
   
   
