@@ -1,0 +1,58 @@
+# config file containing Deployment and Service for mongodb
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo-deployment
+  labels:
+    app: mongo
+spec:
+  replicas: 1 # when scaling db use statefulset and not deployment
+  selector:
+    matchLabels:
+      app: mongo
+  template:               # config of the pod
+    metadata:
+      labels:
+        app: mongo
+    spec:
+      containers:         # list of containers inside the pod
+      - name: mongodb
+        image: mongo:5.0
+        ports:
+        - containerPort: 27017
+        env:
+        - name: MONGO_INITDB_ROOT_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: mongo-secret
+              key: mongo-user  
+        - name: MONGO_INITDB_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mongo-secret
+              key: mongo-password 
+
+
+---
+#service config
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo-service
+  labels:
+    app: mongo
+spec:
+  selector:           # selects pods to forward the reqs to
+    app: mongo
+  ports:
+    - protocol: TCP
+      port: 27017
+      targetPort: 27017
+  # type: ClusterIP
+
+
+
+
+
+
