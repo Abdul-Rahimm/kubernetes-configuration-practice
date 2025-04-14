@@ -1,5 +1,3 @@
-# config file containing Deployment and Service for the webapp
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -7,58 +5,47 @@ metadata:
   labels:
     app: webapp
 spec:
-  replicas: 1 # when scaling db use statefulset and not deployment
+  replicas: 1
   selector:
     matchLabels:
       app: webapp
-  template:               # config of the pod
+  template:
     metadata:
       labels:
         app: webapp
     spec:
-      containers:         # list of containers inside the pod
+      containers:
       - name: webapp
-        image: nanajanashia/k8s-demo-app:1.0
+        image: nanajanashia/k8s-demo-app:v1.0
         ports:
-        - containerPort: 3000 # should be the same as targetPort in service
-      env:
-      - name: USER_NAME
-        valueFrom:
-          secretKeyRef:
-            name: mongo-secret
-            value: mongo-user
-      - name: USER_PWD
-        valueFrom:
-          secretKeyRef:
-            name: mongo-secret
-            value: mongo-password
-      - name: DB_URL
-        valueFrom:
-          configMapKeyRef:
-            name: mongo-config
-            value: mongo-url
-
-
+        - containerPort: 3000
+        env:
+        - name: USER_NAME
+          valueFrom:
+            secretKeyRef:
+              name: mongo-secret
+              key: mongo-user
+        - name: USER_PWD
+          valueFrom:
+            secretKeyRef:
+              name: mongo-secret
+              key: mongo-password 
+        - name: DB_URL
+          valueFrom:
+            configMapKeyRef:
+              name: mongo-config
+              key: mongo-url
 ---
-#service config
 apiVersion: v1
 kind: Service
 metadata:
   name: webapp-service
-  labels:
-    app: webapp
 spec:
   type: NodePort
-  selector:           # selects pods to forward the reqs to
+  selector:
     app: webapp
   ports:
     - protocol: TCP
-      port: 27017
-      targetPort: 3000     # Always the same as container port
+      port: 3000
+      targetPort: 3000
       nodePort: 30100
-
-
-
-
-
-
